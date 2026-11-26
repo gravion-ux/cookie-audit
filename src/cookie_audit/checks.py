@@ -250,5 +250,9 @@ def check_cookies(
     for cookie in cookies:
         cookie_findings = check_cookie(cookie, now=now, host=host)
         findings.extend(cookie_findings)
-        cookie_scores[cookie.name] = score_findings(cookie_findings)
+        score = score_findings(cookie_findings)
+        # A response may set the same cookie name more than once. Keep the
+        # worst score for that name so a later clean cookie cannot hide an
+        # earlier risky one in the overall result.
+        cookie_scores[cookie.name] = max(cookie_scores.get(cookie.name, 0), score)
     return AuditResult(cookies=cookies, findings=findings, cookie_scores=cookie_scores)
