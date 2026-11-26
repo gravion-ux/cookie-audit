@@ -118,6 +118,16 @@ def test_scoring_capped_at_100():
     assert result.risk_score == 100
 
 
+def test_duplicate_cookie_names_keep_the_worst_score():
+    risky = parse_set_cookie("session=abc")
+    clean = parse_set_cookie(
+        "session=def; Secure; HttpOnly; SameSite=Strict; Max-Age=60; Path=/app"
+    )
+    result = check_cookies([risky, clean], now=NOW)
+    assert result.cookie_scores["session"] >= 50
+    assert result.risk_score == result.cookie_scores["session"]
+
+
 def test_every_finding_has_remediation():
     cookie = parse_set_cookie("session_token=abc")
     for finding in check_cookie(cookie, now=NOW):
