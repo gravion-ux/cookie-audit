@@ -1,11 +1,10 @@
+<p align="center"><img src="assets/banner.svg" alt="cookie-audit banner" width="100%"/></p>
+
 # cookie-audit
 
-A cookie security analyzer. `cookie-audit` parses `Set-Cookie` headers and
-flags the misconfigurations that lead to session theft and CSRF: missing
-`Secure`/`HttpOnly`, weak or invalid `SameSite`, `__Host-`/`__Secure-`
-prefix-rule violations, over-long lifetimes, and overly broad `Domain`/`Path`
-scopes. Every finding carries a severity and a concrete remediation, and each
-cookie gets a 0–100 risk score.
+[![CI](https://github.com/gravion-ux/cookie-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/gravion-ux/cookie-audit/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+**A cookie security analyzer.**
 
 Pure Python standard library — no runtime dependencies.
 
