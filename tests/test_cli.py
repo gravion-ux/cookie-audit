@@ -5,7 +5,7 @@ from email.message import Message
 
 import pytest
 
-from cookie_audit.cli import main
+from cookie_audit.cli import main, validate_http_url
 
 CLEAN = "theme=dark; Secure; HttpOnly; SameSite=Lax; Max-Age=86400; Path=/app\n"
 DIRTY = "session_token=abc; Path=/\n"
@@ -113,3 +113,15 @@ def test_cli_url_fetch_failure_is_usage_error(monkeypatch, capsys):
     monkeypatch.setattr(urllib.request, "urlopen", failing_urlopen)
     assert main(["--url", "https://example.test/"]) == 2
     assert "failed to fetch" in capsys.readouterr().err
+
+
+
+
+@pytest.mark.parametrize("url", ["file:///etc/passwd", "ftp://example.com/x", "example.com", "https://"])
+def test_validate_http_url_rejects_non_http(url):
+    with pytest.raises(ValueError):
+        validate_http_url(url)
+
+
+def test_validate_http_url_accepts_https():
+    assert validate_http_url("https://example.com/login") == "https://example.com/login"

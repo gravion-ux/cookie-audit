@@ -57,8 +57,21 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def validate_http_url(url: str) -> str:
+    """Return *url* when it is an http(s) URL with a host, else raise ValueError.
+
+    Restricting the scheme keeps ``--url`` from being pointed at local
+    files or other urllib handlers (``file://``, ``ftp://`` ...).
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        raise ValueError(f"URL must be http(s) with a host: {url}")
+    return url
+
+
 def fetch_set_cookie_headers(url: str) -> list[str]:
     """Return the Set-Cookie header values served by *url*."""
+    validate_http_url(url)
     request = urllib.request.Request(url, headers={"User-Agent": f"cookie-audit/{__version__}"})
     with urllib.request.urlopen(request, timeout=10) as response:
         return response.headers.get_all("Set-Cookie") or []
